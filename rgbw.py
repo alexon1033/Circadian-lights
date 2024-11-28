@@ -1,4 +1,62 @@
 import numpy as np
+import datetime
+
+def time_to_kelvin_and_illuminance(current_time, current_date=None):
+    """
+    Convert the current time to a Kelvin temperature and relative illuminance to mimic daylight.
+    
+    Args:
+    - current_time (datetime.time): The current time.
+    - current_date (datetime.date, optional): The current date. Defaults to today's date.
+    
+    Returns:
+    - kelvin (int): The corresponding color temperature in Kelvin.
+    - illuminance (float): Relative illuminance (0.0 to 1.0).
+    """
+    # Default to today's date if no date is provided
+    if current_date is None:
+        current_date = datetime.date.today()
+    
+    # Determine if it's a weekend
+    is_weekend = current_date.weekday() >= 5  # Saturday (5) or Sunday (6)
+    
+    # Set sunrise and sunset times (in minutes from midnight)
+    sunrise = 6 * 60 if not is_weekend else 8 * 60 + 30  # 6:00 AM on weekdays, 8:30 AM on weekends
+    sunset = 18 * 60  # 6:00 PM for both weekdays and weekends
+    
+    # Convert current time to minutes since midnight
+    current_minutes = current_time.hour * 60 + current_time.minute
+    
+    # Define the range of Kelvin temperatures for daylight
+    min_kelvin = 2000  # Warm light at sunrise/sunset
+    max_kelvin = 6500  # Cool light at midday
+    
+    # Before sunrise or after sunset, return the warmest light and no illuminance
+    if current_minutes < sunrise:
+        return min_kelvin, 0.0  # Lights are off before sunrise
+    elif current_minutes > sunset:
+        return min_kelvin, 0.0  # Lights are off after sunset
+    
+    # Calculate the midpoint of the day (noon)
+    midday = (sunrise + sunset) / 2
+    
+    # Scale time to a 0-π range for smooth transitions
+    x = (current_minutes - sunrise) / (sunset - sunrise) * np.pi
+    
+    # Use a sine wave to model the transition in color temperature
+    kelvin = min_kelvin + (max_kelvin - min_kelvin) * np.sin(x)
+    
+    # Calculate relative illuminance:
+    # Linearly fade in from sunrise to midday (0 to 1), then fade out from midday to sunset
+    if current_minutes <= midday:
+        # Fade in: Map [sunrise, midday] to [0, 1]
+        illuminance = (current_minutes - sunrise) / (midday - sunrise)
+    else:
+        # Fade out: Map [midday, sunset] to [1, 0]
+        illuminance = (sunset - current_minutes) / (sunset - midday)
+    
+    return int(kelvin), float(illuminance)
+
 
 def rgb_to_rgbw(target, backlight):
     """
