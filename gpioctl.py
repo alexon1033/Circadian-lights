@@ -1,6 +1,6 @@
 # Import necessary libraries
 import gpiozero as gz  # For controlling GPIO pins on a Raspberry Pi
-import rgbwc  # Custom or external library for RGBW color temperature calculations
+import rgbwCalculations as rgbwc  # Custom or external library for RGBW color temperature calculations
 import datetime  # To work with the current date and time
 
 # Define GPIO pins for each color channel
@@ -30,10 +30,12 @@ class rgbw_controller():
     def update_time(self):
         # Get the current time
         time = datetime.datetime.now().time()
-        # Convert the time to a corresponding Kelvin temperature (function needs improvement)
-        self.temperature = self.time_to_kelvin(time)
+        # Convert the time to a corresponding Kelvin temperature
+        self.temperature, self.illuminance = rgbwc.time_to_kelvin_and_illuminance(time)
         # Convert the Kelvin temperature to RGBW values
         self.rgbw = rgbwc.kelvin_to_rgbw(self.temperature)
+        # Apply illuminance scaling factor
+        self.rgbw = self.rgbw * self.illuminance
         # Update the LED strip with the new RGBW values
         self.update_rgbw()
 
