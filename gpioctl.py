@@ -1,5 +1,6 @@
 import gpiozero as gz
 import rgbwc
+import datetime
 
 red_pin = 2
 green_pin = 3
@@ -8,23 +9,24 @@ white_pin = 5
 
 class rgbw_controller():
   def __init__(self, red, green, blue, white):
-    self.red = gz.PWMLED(red)
-    self.green = gz.PWMLED(green)
-    self.blue = gz.PWMLED(blue)
-    self.white = gz.PWMLED(white)
-
-    self.temperature = time_to_kelvin()
-    self.update_rgbw(rgbwc.kelvin_to_rgbw(self.temperature)))
-
+    self.red_pin = gz.PWMLED(red)
+    self.green_pin = gz.PWMLED(green)
+    self.blue_pin = gz.PWMLED(blue)
+    self.white_pin = gz.PWMLED(white)
     
+  def update_rgbw(self):
+    self.red_pin.value = self.rgbw[0]/255
+    self.green_pin.value = self.rgbw[1]/255
+    self.blue_pin.value = self.rgbw[2]/255
+    self.white_pin.value = self.rgbw[3]/255
 
-  def update_rgbw(self, rgbw):
-    self.red.value = rgbw[0]/255
-    self.green.value = rgbw[1]/255
-    self.blue.value = rgbw[2]/255
-    self.white.value = rgbw[3]/255
+  def update_time(self):
+    time = datetime.datetime.now().time()
+    self.temperature = time_to_kelvin(time)
+    self.rgbw = rgbwc.kelvin_to_rgbw(temperature) 
+    self.update_rgbw()
 
-  def time_to_kelvin():
+  def time_to_kelvin(time):
     @static
     return 6500
 
