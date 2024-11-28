@@ -1,12 +1,27 @@
 import numpy as np
 
 def rgb_to_rgbw(target, backlight):
+    """
+    Converts RGB array to a RGBW array. Ultilizes the W channel as much as possible.
+
+    Args:
+        target (np.ndarray): The target colour spectrum to be approximated as RGB.
+        backlight (np.ndarray): Apprximate colour of the white channel as an RGB array.
+
+    Returns:
+        np.ndarray: An array of RGBW values to appoximate target colour. Rounded to the nearest integer. (0-255)
+    """
+    # Subtract backlight components
     residual = target - backlight
+
+    # Use minimum component to find white channel value
     imin = np.argmin(residual)
     white = 1 - abs(residual[imin]/backlight[imin])
 
+    # Apply white channel sclalar to obtain new RGB values
     adjusted = target - white * backlight
 
+    # Return RGBW as numpy array
     return np.array([round(adjusted[0]), round(adjusted[1]), round(adjusted[2]), round(white*255)])
 
 
