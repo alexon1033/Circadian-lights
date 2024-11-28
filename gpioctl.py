@@ -13,8 +13,19 @@ class rgbw_controller():
     self.blue = gz.PWMLED(blue)
     self.white = gz.PWMLED(white)
 
+    self.temperature = time_to_kelvin()
+    self.update_rgbw(rgbwc.kelvin_to_rgbw(self.temperature)))
+
+    
+
   def update_rgbw(self, rgbw):
     self.red.value = rgbw[0]/255
     self.green.value = rgbw[1]/255
     self.blue.value = rgbw[2]/255
     self.white.value = rgbw[3]/255
+
+  def time_to_kelvin():
+    @static
+    return 6500
+
+  def 
