@@ -30,4 +30,3 @@ class rgbw_controller():
     @static
     return 6500
 
-  def 
