@@ -27,7 +27,7 @@ class rgbw_controller():
         self.white_pin.value = self.rgbw[3] / 255
 
     # Update the LED color temperature based on the current time
-    def update_time(self):
+    def update(self):
         # Get the current time
         time = datetime.datetime.now().time()
         # Convert the time to a corresponding Kelvin temperature
@@ -39,9 +39,17 @@ class rgbw_controller():
         # Update the LED strip with the new RGBW values
         self.update_rgbw()
 
-    # Static method placeholder to convert time to Kelvin temperature
-    # This method currently returns a fixed value (e.g., 6500K)
-    @staticmethod
-    def time_to_kelvin(time):
-        return 6500
 
+if __name__ == '__main__':
+    leds = rgbw_controller(red_pin, green_pin, blue_pin, white_pin)
+
+    try:
+        while True:
+            leds.update()
+            print(f"Debug: Lighting updated to ( {leds.temperature}k, {leds.illuminance} )\n
+                RGBW[{leds.red_pin.value}, {leds.green_pin.value}, {leds.blue_pin.value}, {leds.white_pin.value}]")
+            datetime.sleep(60)
+
+    except KeyboardInterrupt:
+            break
+            
