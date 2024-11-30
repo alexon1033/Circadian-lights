@@ -33,7 +33,7 @@ class rgbw_controller():
         # Convert the time to a corresponding Kelvin temperature
         self.temperature, self.illuminance = rgbwc.time_to_kelvin_and_illuminance(time)
         # Convert the Kelvin temperature to RGBW values
-        self.rgbw = rgbwc.kelvin_to_rgbw(self.temperature)
+        self.rgbw = rgbwc.kelvin_to_rgbw(self.temperature, 4000)
         # Apply illuminance scaling factor
         self.rgbw = self.rgbw * self.illuminance
         # Update the LED strip with the new RGBW values
@@ -41,15 +41,15 @@ class rgbw_controller():
 
 
 if __name__ == '__main__':
+    from time import sleep
     leds = rgbw_controller(red_pin, green_pin, blue_pin, white_pin)
 
     try:
         while True:
             leds.update()
-            print(f"Debug: Lighting updated to ( {leds.temperature}k, {leds.illuminance} )\n
-                RGBW[{leds.red_pin.value}, {leds.green_pin.value}, {leds.blue_pin.value}, {leds.white_pin.value}]")
-            datetime.sleep(60)
+            print(f"Debug: Lighting updated to ( {leds.temperature}k, {leds.illuminance} )\nRGBW[{leds.red_pin.value}, {leds.green_pin.value}, {leds.blue_pin.value}, {leds.white_pin.value}]")
+            sleep(60)
 
     except KeyboardInterrupt:
-            break
+            pass
             
